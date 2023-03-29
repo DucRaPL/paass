@@ -116,7 +116,7 @@ def xiBC(i,t):
     return sum*(1/m)
 
 xBC(0)
-xBC(1)
+xBC(2)
 xBC(15)
 ## Simulations:
 
@@ -167,15 +167,17 @@ for i in range(40):
 
 #2) Cas assymétrique:
 
-n = 5
-x0 = sorted(np.array([[rd.random()] for i in range(n)]), key=lambda x: x[0])
-print(x0)
-eps = [(0,0) for k in range(n)]
+beta_barre = 1
+n = 3
+x0 = sorted([[rd.random()] for i in range(n)], key=lambda x: x[0])
 
-def I2(i,x):
+def I2(i,x2):
     res = []
+    eps1 = eps(x2)
     for j in range(n):
-        if ((-1)*eps[i][0] <= abs(x[i][0]-x[j][0]) <= eps[i][1]):
+        epsl = eps1[j][0]
+        epsr = eps1[j][1]
+        if epsl <= (x2[i][0]-x2[j][0]) and (x2[i][0]-x2[j][0])<= epsr:
             res += [j]
     return res
 
@@ -183,14 +185,13 @@ def xBC2(t):
     if t == 0:
         return x0
     res = [[] for i in range(n)]
-    for i in range(n):
-        res[i] = [xiBC2(i,t)]
-    return np.array(res)
+    for k in range(n):
+        res[k] = [xiBC2(k,t)]
+    return res
 
 def xiBC2(i,t):
     if t == 0:
         return x0
-    
     x2 = xBC2(t-1)
     ens = I2(i,x2)
     m = len(ens)
@@ -202,13 +203,15 @@ def xiBC2(i,t):
         sum += x2[j][0]
     return sum*(1/m)
 
-m = 1
-
-def f(x) :
-    return m*x+(1-m)/2
-
+m = 0.1
 def beta_r(x):
     return m*x+(1-m)/2
 
-def beta_l(x): #Def inutile mais bon...
-    return 1-beta_r(x)
+beta_barre*beta_r(x0[2][0])
+[(beta_barre*beta_r(x0[i][0]),beta_barre*(1-beta_r(x0[i][0]))) for i in range(n)]
+
+def eps(x2):
+    return [(beta_barre*beta_r(x2[i][0]),beta_barre*(1-beta_r(x2[i][0]))) for i in range(n)]
+
+x0 = sorted([[rd.random()] for i in range(n)], key=lambda x: x[0])
+xBC2(1)
